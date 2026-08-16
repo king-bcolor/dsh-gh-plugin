@@ -21,6 +21,28 @@ exit "\${FAKE_GH_EXIT_CODE:-0}"
 }
 
 
+
+test('gh tools expose terminal cards for call and result UI', () => {
+  const tools = buildTools()
+  const repoView = tools.find((entry) => entry.name === 'gh_repo_view')
+  const call = repoView.presentCall({ repo: 'owner/repo' })
+  assert.equal(call.card, 'terminal')
+  assert.match(call.title, /gh repo view owner\/repo/)
+  const result = repoView.presentResult({ repo: 'owner/repo' }, {
+    content: [{ type: 'text', text: 'owner/repo' }],
+    isError: false,
+  })
+  assert.equal(result.card, 'terminal')
+  assert.equal(result.output, 'owner/repo')
+
+  const api = tools.find((entry) => entry.name === 'gh_api')
+  const apiResult = api.presentResult({ path: 'repos/owner/repo' }, {
+    content: [{ type: 'text', text: 'boom' }],
+    isError: true,
+  })
+  assert.equal(apiResult.card, 'generic')
+  assert.match(apiResult.content[0].text, /boom/)
+})
 test('every registered tool executes with its minimal valid arguments', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'dsh-gh-tool-smoke-'))
   t.after(() => rm(dir, { recursive: true, force: true }))
