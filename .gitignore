@@ -1,4 +1,6 @@
 node_modules/
 .dsh-test/
+.dsh-local/
+dsh-local
 *.log
 .DS_Store
