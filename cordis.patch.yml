@@ -1,0 +1,5 @@
+# DSH bundle patch: inserts the plugin row into a profile roster.
+# Install: dsh plugin --profile <name> add github:<owner>/dsh-gh-plugin
+- insert:
+    - id: gh
+      name: dsh-gh-plugin
