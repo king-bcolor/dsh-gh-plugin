@@ -9,6 +9,7 @@ A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin tha
 
 ## Features
 - Browser settings page **GitHub**: auth status, generic forms for every `gh_*` tool, confirmations, and JSON/text results.
+- Session **GitHub** view tab: profile, contribution heatmap, repository list with actions, inbox, and local/remote Git branches.
 - Auth status and login guidance.
 - Repository create/view/list/edit/delete with topic management.
 - Issue create/list/view/close/reopen/comment/edit.
@@ -50,7 +51,7 @@ dsh plugin --profile default add .
 dsh --profile default
 # or: dsh web
 ```
-Open **Settings → GitHub** to run every gh tool from the browser UI.
+Open the **GitHub** tab in a session for heatmap/repositories/inbox/branches, or **Settings → GitHub** to run every gh tool.
 
 Example prompts:
 - `Use gh_issue_list to list open issues in this repo.`
