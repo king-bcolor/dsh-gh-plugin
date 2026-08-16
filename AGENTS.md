@@ -7,7 +7,9 @@ This directory is a DeepSeek Harness plugin workspace (bundle).
 - `cordis.patch.yml` — bundle patch inserted into a DSH profile
 - `index.js` — Cordis plugin entry (`name`, `inject`, `Config`, `apply`)
 - `lib/runner.js` — gh child-process runner (argv only, timeout, JSON parsing)
-- `lib/tools.js` — `gh_*` tool definitions and argument mapping
+- `lib/tools.js` — `gh_*` tool definitions, argument mapping, and UI catalog
+- `lib/remote.js` — host Remote service (`ctx.gh`) for the browser settings page
+- `lib/client.js` — browser settings page (GitHub 控制台) loaded through `dsh.client`
 - `test/` — node:test tests with fake `gh` fixtures; run with `npm test`
 - `docs/` — use-case, requirements, UI, implementation (TDD), submission docs
 

@@ -11,6 +11,7 @@
 
 import z from '@deepseek-ai/schemastery'
 import { buildTools } from './lib/tools.js'
+import { GhRemoteService } from './lib/remote.js'
 
 export const name = 'gh'
 export const inject = ['tools']
@@ -31,4 +32,10 @@ export function apply(ctx, config = {}) {
   for (const tool of tools) {
     ctx.tools.register(tool)
   }
+
+  ctx.plugin(GhRemoteService, {
+    ghBin: config.ghBin ?? 'gh',
+    timeoutMs: config.timeoutMs ?? 30000,
+    confirmDangerous: config.confirmDangerous ?? true,
+  })
 }

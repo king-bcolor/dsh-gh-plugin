@@ -8,6 +8,7 @@ A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin tha
 `dsh-gh-plugin` exposes GitHub operations to DSH agents: repositories, issues, pull requests, search, Actions, releases, and the GitHub API — all through structured JSON-backed tools.
 
 ## Features
+- Browser settings page **GitHub**: auth status, generic forms for every `gh_*` tool, confirmations, and JSON/text results.
 - Auth status and login guidance.
 - Repository create/view/list/edit/delete with topic management.
 - Issue create/list/view/close/reopen/comment/edit.
@@ -47,7 +48,10 @@ dsh plugin --profile default add .
 ## Usage
 ```bash
 dsh --profile default
+# or: dsh web
 ```
+Open **Settings → GitHub** to run every gh tool from the browser UI.
+
 Example prompts:
 - `Use gh_issue_list to list open issues in this repo.`
 - `Search GitHub for dsh-plugin repositories sorted by stars.`

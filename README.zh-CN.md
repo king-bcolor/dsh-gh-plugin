@@ -8,6 +8,7 @@
 `dsh-gh-plugin` 把 GitHub 操作暴露给 DSH Agent：仓库、issue、PR、搜索、Actions、Release、GitHub API，全部通过结构化 JSON 工具调用完成。
 
 ## 功能
+- 浏览器设置页 **GitHub**：认证状态、全部 `gh_*` 工具的动态表单、危险操作确认、JSON/文本结果展示。
 - 认证状态与登录引导。
 - 仓库创建/查看/列表/编辑/删除，支持 topic 维护。
 - Issue 创建/列表/查看/关闭/重开/评论/编辑。
@@ -47,7 +48,10 @@ dsh plugin --profile default add .
 ## 使用
 ```bash
 dsh --profile default
+# 或：dsh web
 ```
+打开 **设置 → GitHub**，即可在浏览器中直接执行全部 gh 工具。
+
 示例提示词：
 - `用 gh_issue_list 列出当前仓库未关闭的 issue。`
 - `搜索 GitHub 上 dsh-plugin 主题的仓库，按 stars 排序。`
