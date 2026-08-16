@@ -36,21 +36,29 @@ test('client bundle registers a GitHub settings section', async () => {
   const exports = handoff.factory(require)
   assert.ok(exports.inject.includes('slots'))
   assert.ok(exports.inject.includes('connection'))
+  assert.ok(exports.inject.includes('sessions'))
   assert.equal(typeof exports.apply, 'function')
 
-  let contribution
-  let Component
-  let factory
+  const factories = {}
+  const contributions = {}
+  const components = {}
   const calls = []
   const ctx = {
     slots: {
       inject(name, registerFactory) {
-        factory = registerFactory
+        factories[name] = registerFactory
       },
       register(value, component) {
-        contribution = value
-        Component = component
+        contributions[value.name] = value
+        components[value.name] = component
         return () => {}
+      },
+    },
+    sessions: {
+      list: {
+        getSnapshot() {
+          return { byId: { s1: { cwd: '/tmp/work' } } }
+        },
       },
     },
     connection: {
@@ -63,22 +71,40 @@ test('client bundle registers a GitHub settings section', async () => {
     },
   }
   exports.apply(ctx)
-  factory()
-  assert.equal(contribution.name, 'settings.section')
-  assert.equal(contribution.id, 'gh')
-  assert.equal(contribution.label(), 'GitHub')
+  factories['settings.section']()
+  assert.equal(contributions['settings.section'].id, 'gh')
+  assert.equal(contributions['settings.section'].label(), 'GitHub')
 
-  const injected = contribution.inject()
-  assert.equal(typeof injected.gh.catalog, 'function')
-  assert.equal(typeof injected.gh.status, 'function')
-  assert.equal(typeof injected.gh.execute, 'function')
-  await injected.gh.catalog()
+  const settingsInjected = contributions['settings.section'].inject()
+  assert.equal(typeof settingsInjected.gh.catalog, 'function')
+  assert.equal(typeof settingsInjected.gh.status, 'function')
+  assert.equal(typeof settingsInjected.gh.execute, 'function')
+  await settingsInjected.gh.catalog()
   assert.equal(calls.length, 1)
   assert.equal(calls[0][0], '/api')
   assert.equal(calls[0][1], 'gh/catalog')
   assert.deepEqual(JSON.parse(JSON.stringify(calls[0][2])), { args: {} })
 
-  const tree = Component({ gh: injected.gh })
-  assert.equal(tree.tag, 'div')
-  assert.equal(tree.props.className, 'dgh_section')
+  const settingsTree = components['settings.section']({ gh: settingsInjected.gh })
+  assert.equal(settingsTree.tag, 'div')
+  assert.equal(settingsTree.props.className, 'dgh_section')
+
+  factories['conversation.view']()
+  const view = contributions['conversation.view']
+  assert.equal(view.id, 'gh')
+  assert.equal(view.label(), 'GitHub')
+  const viewInjected = view.inject('s1')
+  assert.equal(viewInjected.cwd, '/tmp/work')
+  assert.equal(typeof viewInjected.gh.profile, 'function')
+  assert.equal(typeof viewInjected.gh.repositories, 'function')
+  assert.equal(typeof viewInjected.gh.inbox, 'function')
+  assert.equal(typeof viewInjected.gh.branches, 'function')
+  assert.equal(typeof viewInjected.gh.repoBranches, 'function')
+  await viewInjected.gh.profile()
+  assert.equal(calls[1][0], '/api')
+  assert.equal(calls[1][1], 'gh/profile')
+
+  const viewTree = components['conversation.view']({ sessionId: 's1', gh: viewInjected.gh, cwd: '/tmp/work' })
+  assert.equal(viewTree.tag, 'div')
+  assert.equal(viewTree.props.className, 'dgh_dashboard')
 })
