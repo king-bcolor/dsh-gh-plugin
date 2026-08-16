@@ -35,12 +35,13 @@ test('client bundle registers a GitHub settings section', async () => {
   }
   const exports = handoff.factory(require)
   assert.ok(exports.inject.includes('slots'))
-  assert.ok(exports.inject.includes('remote'))
+  assert.ok(exports.inject.includes('connection'))
   assert.equal(typeof exports.apply, 'function')
 
   let contribution
   let Component
   let factory
+  const calls = []
   const ctx = {
     slots: {
       inject(name, registerFactory) {
@@ -52,7 +53,14 @@ test('client bundle registers a GitHub settings section', async () => {
         return () => {}
       },
     },
-    remote: { gh: {} },
+    connection: {
+      rpc: {
+        call: async (...args) => {
+          calls.push(args)
+          return { ok: true, value: [] }
+        },
+      },
+    },
   }
   exports.apply(ctx)
   factory()
@@ -60,7 +68,17 @@ test('client bundle registers a GitHub settings section', async () => {
   assert.equal(contribution.id, 'gh')
   assert.equal(contribution.label(), 'GitHub')
 
-  const tree = Component({ gh: {} })
+  const injected = contribution.inject()
+  assert.equal(typeof injected.gh.catalog, 'function')
+  assert.equal(typeof injected.gh.status, 'function')
+  assert.equal(typeof injected.gh.execute, 'function')
+  await injected.gh.catalog()
+  assert.equal(calls.length, 1)
+  assert.equal(calls[0][0], '/api')
+  assert.equal(calls[0][1], 'gh/catalog')
+  assert.deepEqual(JSON.parse(JSON.stringify(calls[0][2])), { args: {} })
+
+  const tree = Component({ gh: injected.gh })
   assert.equal(tree.tag, 'div')
   assert.equal(tree.props.className, 'dgh_section')
 })
